@@ -1,0 +1,213 @@
+---
+title: "summary"
+author: "Or Duek"
+date: "`r Sys.Date()`"
+output:
+  pdf_document: default
+  html_document: default
+editor_options:
+  markdown:
+    wrap: 72
+---
+
+# 1. Load data
+
+Please load the file named 'nhanes.xlsx'
+
+```{r}
+library(readxl)
+library(tidyverse)
+library(janitor)
+library(table1)
+library(kableExtra)
+library(gtsummary)
+library(ggplot2)
+library(ggpubr) 
+library(cowplot)
+library(rstatix)
+library(broom)
+library(gt)
+library(writexl)
+library(NHANES)
+
+df <- read_xlsx("data/nhanes.xlsx")
+
+```
+
+# 2. Select variables
+
+Select the following variables for analysis. ID, Age, Gender,
+PhysActive,PhysActiveDays,TVHrsDay, Education, MaritalStatus, BMI,
+Pulse, TotChol, DaysMentHlthBad, Depressed,SleepTrouble, SleepHrsNight
+
+```{r}
+
+df <- df %>% 
+  select(ID, Age, Gender,
+PhysActive,PhysActiveDays,TVHrsDay, Education, MaritalStatus, BMI,
+Pulse, TotChol, DaysMentHlthBad, Depressed,SleepTrouble, SleepHrsNight)
+```
+
+# 3. Explore data (make character as factor or something like that)
+
+-   Explore the data
+    -   Does all variables are correctly identified (factors, numeric
+        etc.)?
+    -   Do you see any thing that seems unlikely?
+    -   Do you see many NA's? (missing data)? What do you think we
+        should do with them
+    -   Rearrange the data so factors will be factors, and missing data
+        will be removed
+
+```{r}
+glimpse(df)
+
+new_df <- df %>% 
+  mutate(across(where(is.character), as.factor),
+         across(where(is.double), as.numeric)) %>% 
+  select(-TVHrsDay)
+
+str(new_df)
+
+    
+```
+
+# 4. summary_by (gender) [mean, sd]
+
+Summarise mean (sd) physical activity days by gender
+
+```{r}
+mean_sd <- new_df %>%
+  group_by(Gender) %>%
+  summarise(
+    mean_days = mean(PhysActiveDays, na.rm = TRUE),
+    sd_days = sd(PhysActiveDays, na.rm = TRUE)
+  )
+```
+
+# 5. compute new variable (build a function)
+
+-   Create a function called minus_log10 that calculates the minus of
+    the log10 of the Physical Activity days
+-   Once created, use it to create a new variable called PhysActDaysLog
+-   Following that --\> run it on all numerical variables
+
+```{r}
+minus_log10<- function(x){
+  y <- -log10(x)
+  return(y)
+}
+
+df2 <- df %>% 
+  mutate(PhysActDaysLog = minus_log10(PhysActiveDays))
+  
+df3 <- df2 %>% 
+  select(-ID, -PhysActDaysLog) %>% 
+  mutate(across(where(is.numeric), minus_log10, .names = '{.col}_log'))
+```
+
+# 6. Plot
+
+-   Plot Sleep Hours per Night between different marital status
+    (boxplot)
+
+    It should look similar to this one ![Boxplot](boxplot.png)
+
+```{r}
+glimpse(df3)
+sleep_h_marital_boxplot <- df3 %>%
+  filter(!is.na(SleepHrsNight), !is.na(MaritalStatus)) %>% 
+  ggplot(aes(y=SleepHrsNight, x=MaritalStatus, fill=MaritalStatus ))+
+  geom_boxplot()+theme_minimal()
+  
+  sleep_h_marital_boxplot
+  
+```
+
+Ok, nice. Now show scatterplot of BMI and Pulse (add BMI as color as
+well and see what happens)
+
+should be similar to the following: ![BMI_Color](bmi_color.png)
+
+```{r}
+glimpse(df3)
+BMI_pulse_scatterplot <- df3 %>% 
+  filter(!is.na(BMI_log), !is.na(Pulse_log)) %>% 
+  ggplot(aes(x=BMI, y=Pulse)) +
+  geom_point()
+
+BMI_pulse_scatterplot
+
+BMI_pulse_scatterplot2 <- df3 %>% 
+  filter(!is.na(BMI_log), !is.na(Pulse_log)) %>% 
+  ggplot(aes(x=BMI, y=Pulse, colour =BMI)) +
+  geom_point()
+
+BMI_pulse_scatterplot2
+```
+
+Nice. Now we want you to plot the scatter plot of both BMI and TotChol
+with Pulse (i.e., two plot, next to each other, with one showing BMI and
+one Total cholesterole)
+
+-   you might need to do something to the data first...
+
+```{r}
+glimpse(df3)
+df4 <- df3 %>% 
+  select(BMI,Pulse,TotChol)
+
+df_long <- df4 %>% 
+  pivot_longer(cols = c("BMI", "TotChol"), 
+               names_to = "Variable",
+               values_to = "Value")
+
+
+```
+
+
+```{r}
+BMI_Totchol_pulse_scatterplot <- df_long %>% 
+  filter(!is.na(Pulse), !is.na(Value)) %>% 
+  ggplot(aes(x=Value, y=Pulse, colour =Variable)) +
+  geom_point()+facet_wrap(~Variable)
+
+BMI_Totchol_pulse_scatterplot
+```
+
+# 7. Table1
+
+-   Build a nice descriptive table of all relevant variables (by gender)
+
+```{r}
+df_table <-df3 %>% 
+  drop_na()
+table1(~ . | Gender, data = df_table)
+table
+df6 <-new_df %>% 
+  select(-ID) %>% drop_na() %>%
+  tbl_summary(
+    by = Gender
+  ) %>% 
+  add_p() %>% 
+  bold_p ()
+df6
+```
+
+# Statistics (t.test/chisquare)
+
+-   Now, can you test if there is a difference between men and women in
+    cholesterol levels?
+
+    -   Choose the correct statistical test and explain the results
+
+    ```{r}
+    glimpse(df3)
+    
+df5 <- df3 %>% 
+  mutate(gender=as.factor(Gender)) %>% 
+  filter(!is.na(gender), !is.na(TotChol))
+
+test <- t.test(TotChol~gender, data = df5)
+test
+    ```
