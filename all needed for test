@@ -14,6 +14,29 @@ chooseCRANmirror(graphics = FALSE, ind = 1)
 ::: {dir="rtl"}
 **חבילות וספריות שימושיות**
 
+packages <- c("readxl", "tidyverse", "janitor", "table1", "kableExtra", 
+              "gtsummary", "ggplot2", "ggpubr", "cowplot", "rstatix", 
+              "broom", "gt", "writexl")
+
+# התקנת חבילות חסרות
+install_if_missing <- function(pkg) {
+  if (!requireNamespace(pkg, quietly = TRUE)) {
+    install.packages(pkg, dependencies = TRUE)
+  }
+}
+
+# התקנת כל החבילות החסרות
+sapply(packages, install_if_missing)
+
+# טעינת כל החבילות
+lapply(packages, library, character.only = TRUE)
+
+# הצגת הודעה לאחר ההפעלה
+message("כל החבילות הותקנו ונטענו בהצלחה!")
+
+
+
+
 ```{r setup, include=FALSE}
 
 install.packages("kableExtra")
