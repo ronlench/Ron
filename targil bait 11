@@ -1,0 +1,121 @@
+---
+title: "Ron Yusufov11"
+author: "Ron"
+date: "`r Sys.Date()`"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+library(readxl)
+library(tidyverse)
+library(janitor)
+library(table1)
+library(kableExtra)
+library(gtsummary)
+library(ggplot2)
+library(ggpubr) 
+library(cowplot) 
+library(rstatix)
+library(broom)
+library(gt)
+library(writexl)
+
+install.packages("NHANES")
+library(NHANES)
+install.packages("gtsummary")
+```
+
+```{r}
+nhanes<- NHANES
+
+glimpse(nhanes)
+
+df_nhanes <- nhanes %>% filter(SurveyYr=="2011_12")
+
+df_nhanes_new <- df_nhanes %>% 
+  select(Gender, Age, Race1, Height, Weight, BPSysAve, BPDiaAve, Diabetes, SleepHrsNight, Smoke100,
+HardDrugs)
+
+str(df_nhanes_new)
+
+df_nhanes_new2 <- df_nhanes_new %>% 
+  mutate(
+    Age = as.numeric(Age),
+    BPSysAve = as.numeric(BPSysAve),
+    BPDiaAve = as.numeric(BPDiaAve),
+    SleepHrsNight = as.numeric(SleepHrsNight))
+str(df_nhanes_new2)
+```
+
+```{r}
+age_HD <- t.test(Age~HardDrugs, data=df_nhanes_new2)
+age_HD$p.value
+#יש הבדל בצריכת סמים קשים לפי קבוצת הגיל
+```
+
+```{r}
+SHr_HD <- t.test(SleepHrsNight~HardDrugs, data=df_nhanes_new2)
+SHr_HD_df<- tidy(SHr_HD)
+```
+
+```{r}
+SHr_HD_race <-df_nhanes_new %>% 
+  group_by(Race1) %>%
+  t_test(SleepHrsNight~HardDrugs)
+```
+
+```{r}
+df_nhanes3 <- df_nhanes_new2 %>%
+  mutate(cat4_race = case_when(
+    Race1 %in% c("Mexican", "Hispanic") ~ "Hispanic",
+    TRUE ~ Race1))
+```
+
+בדקו את הקשר בין המשתנה החדש שיצרתם לבין שיעור האנשים שישנו לפחות 7 שעות בלילה )תצטרכו ליצור משתנה נוסף לשם כך(.
+
+```{r}
+df_nhanes4 <- df_nhanes3 %>%
+  mutate(sleep7 = case_when(SleepHrsNight>=7~"slept_well", TRUE~"slept_bad"))
+
+
+table_chisq_race_vs_sleep7 <- table(df_nhanes4$cat4_race, df_nhanes4$sleep7)
+table_chisq_race_vs_sleep7
+
+chisq.test(table_chisq_race_vs_sleep7)
+
+tab_sleep <- table(df_nhanes4$sleep7)
+tab_cat4 <- table(df_nhanes4$cat4_race)
+
+chsq <-chisq.test(table(df_nhanes4$cat4_race, df_nhanes4$sleep7))
+
+print(chsq)
+```
+
+```{r}
+class(df_nhanes4$cat4_race)
+
+glimpse(df_nhanes4)
+df_final <- df_nhanes4 %>%
+  rename(smoking=Smoke100) %>% 
+  mutate(race = factor(cat4_race, levels = c("White", "Hispanic", "Black", "Other"))) %>% 
+  select(-Race1,-cat4_race)
+
+glimpse(df_final)
+by_gender <- df_final %>% 
+  tbl_summary(
+    by = Gender,
+    missing = "no",
+    statistic = list(all_continuous() ~ "{mean} ({sd})")
+  ) %>% 
+  modify_caption("Summary of the data") %>%  
+  add_overall() %>% 
+  add_p(test = all_continuous() ~ "t.test")
+
+print(by_gender)
+
+by_gender <- by_gender %>% 
+  as_gt()
+gtsave(by_gender,"output/summary_of_the_data.html")
+
+gtsave(by_gender,"output/summary_of_the_data.docx")
+```
