@@ -1,0 +1,108 @@
+---
+title: "Ron yusufov10"
+author: "Ron"
+date: "`r Sys.Date()`"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+library(readxl)
+library(tidyverse)
+library(janitor)
+library(table1)
+library(kableExtra)
+library(gtsummary)
+library(ggplot2)
+library(ggpubr) #אם רוצים להוסיף כל מיני חישובים שיופיעו על גבי הגרף
+library(cowplot) #לא מומלצת
+library(rstatix)
+library(broom)
+library(gt)
+library(writexl)
+```
+
+```{r}
+df <-read_excel("data/sleep_health_lifestyle_fixed.xlsx")
+```
+
+
+.2 חשבו עבור המשתנה של משך השינה )sleep_of_duration )את הממוצע, הטווח )range )וערך
+העשירון השביעי )70%(
+
+
+```{r}
+glimpse(df)
+df_sleep <- df %>% 
+    reframe(mean_sleep=mean(duration_of_sleep ,na.rm = T),
+            range_slep=range(duration_of_sleep,na.rm=T),
+            quan_sleep=quantile(duration_of_sleep ,probs=0.7,na.rm=T))
+```
+.3 צרו משתנה חדש מסוג factor בשם cat3_occupation שמחלק את המקצועות לשלוש קטגוריות:
+Other - ו Doctor, Nurse
+
+```{r}
+df_new <- df %>% 
+  mutate(cat3_occupation=factor(case_when(
+  df$occupation == "Doctor" ~ "Doctor",
+  df$occupation == "Nurse" ~ "Nurse",
+  TRUE ~ "Other")))
+  
+```
+
+
+.4 צרו טבלה עם השלישונים ),1/3 ,2/3 3/3( עבור המשתנה sleep_of_duration בחלוקה לפי
+cat3_occupation( הורידו לפני כן את כל המשתתפים שאין מידע לגבי המקצוע שלהם) ככה הטבלה
+אמורה להיראות:
+
+```{r}
+glimpse(df_new)
+
+df_new_plot <- df_new %>%
+  group_by(cat3_occupation) %>%
+  reframe(quan_sleep= quantile(duration_of_sleep, probs = c(0.333, 0.666, 1),na.rm = TRUE), 
+    labels = c("0.333", "0.666", "1")) %>%
+  ungroup()
+
+plot_sleep <- df_new_plot %>% 
+  ggplot(aes(x=cat3_occupation,y=quan_sleep,fill=labels))+geom_bar(stat="identity", position = "dodge")+ theme_minimal()
+
+plot_sleep
+```
+צרו df עם השלישונים עבור המשתנים לחץ דם סיסטולי ודיאסטולי )systolic_bp ו -diastolic_bp )
+בחלוקה לפי מין )הוציאו את כל המשתתפים שאין מידע לגבי המין שלהם(
+```{r}
+df_bp <- df_new %>% 
+  filter(!is.na(gender)) %>% 
+  group_by(gender, na.rm=T) %>%
+  reframe(quan_bp_systolic = quantile(bp_systolic , probs = c(0.333, 0.666, 1),na.rm = TRUE), 
+    labels = c("0.333", "0.666", "1"),
+    quan_bp_diastolic  = quantile(bp_diastolic, probs = c(0.333, 0.666, 1),na.rm = TRUE), 
+    labels = c("0.333", "0.666", "1"),) %>%
+  ungroup()
+```
+
+
+```{r}
+df_long_bp <- df_bp %>% pivot_longer(cols=c("quan_bp_systolic","quan_bp_diastolic"),
+names_to = 'bp', 
+names_prefix = 'quan_bp_') %>% 
+select(-na.rm)
+
+
+plot_bp <- df_long_bp %>% 
+  ggplot(aes(x=labels,y=value,fill=gender))+geom_bar(stat="identity", position = "dodge")+ labs(title = "Blood pressure quantiles per gender", x="Quantile", y="Blood pressure")+ facet_wrap(~bp)+
+  theme(legend.title = element_blank())
+plot_bp
+```
+
+
+```{r}
+
+df_wide_bp <- df_long_bp %>% 
+  pivot_wider(names_from = gender, values_from = value) %>% 
+  arrange(bp)
+
+write_xlsx(df_wide_bp, "output/df_wide_bp.xlsx")
+  
+```
+
