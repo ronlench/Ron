@@ -1,0 +1,834 @@
+---
+title: "all needed for the test"
+author: "Ron"
+date: "`r Sys.Date()`"
+output:
+  html_document: default
+  pdf_document: default
+---
+```{r}
+chooseCRANmirror(graphics = FALSE, ind = 1)
+```
+
+
+::: {dir="rtl"}
+**חבילות וספריות שימושיות**
+
+```{r setup, include=FALSE}
+
+install.packages("kableExtra")
+Equisee
+
+library(readxl)
+library(tidyverse)
+library(janitor)
+library(table1)
+library(kableExtra)
+library(gtsummary)
+library(ggplot2)
+library(ggpubr) #אם רוצים להוסיף כל מיני חישובים שיופיעו על גבי הגרף
+library(cowplot) #לא מומלצת
+library(rstatix)
+library(broom)
+library(gt)
+library(writexl)
+library(NHANES)
+```
+:::
+
+::: {dir="rtl"}
+**קריאה, יצירה ומחיקה של קבצים ותמונות**
+
+```{r}
+read_excel("path/to/your/file.xlsx")
+
+write.csv(data, "path/to/your/output.csv")
+write_xlsx((data, "path/to/your/output.xlsx")
+
+#Saving Work Sessions
+#To save all workspace objects:
+save.image(file = "my_workspace.RData")
+
+#To save a selected list of objects:
+save(list = c("data", "df"), file = "selected_workspace.RData")
+
+
+#To delete an object:
+rm(list = c("data", "df"))
+
+#שמירת גרפים
+ggsave(filename = "path_to_your_output/nut_boxplot_p.jpg", plot =nut_boxplot_p )
+ggsave(filename = "path_to_your_output/nut_hist_p.pdf", plot =nut_hist_p )
+```
+:::
+
+::: {dir="rtl"}
+**הפעולות האריתמטיות הנפוצות שאפשר לעשות**
+
+```{r}
+Addition: +
+Subtraction: -
+Multiplication: *
+Division: /
+Exponent: ^
+Modulus (Remainder from division): %%
+Integer Division: %/%
+
+  
+#עיגול של מספרים וערכים
+round(df$vector,n)
+#n מספר ספרות אחרי הנקורה
+
+```
+:::
+
+::: {dir="rtl"}
+**אופרטרים**
+
+```{r}
+Lass than: <
+Greater than: >
+Less than or equal to: <=
+Grewater than or equal to: >=
+Equal to: ==
+Not equal to: !=
+```
+:::
+
+::::::::::::: {dir="rtl"}
+**פעולות על וקטורים**
+
+```{r}
+vector_numeric<- c(1,2,5.4,25,17,1241)
+```
+
+::: {dir="rtl"}
+וקטור חדש שמוסיף 2 לכל אחד מהמספרים בוקטור קיים
+:::
+
+```{r}
+plus_2<- vector_numeric+2
+```
+
+::: {dir="rtl"}
+וקטור חדש שמעלה בחזקת 3 את כל המספרים בוקטור
+:::
+
+```{r}
+power_3<- plus_2^3
+```
+
+::: {dir="rtl"}
+וקטור חדש בו מתבצעת הכפלת מספרים של שני וקטורים אחד בשני
+:::
+
+```{r}
+multiple_vector<- vector_numeric*power_3
+```
+
+::: {dir="rtl"}
+יצירת וקטור ריק עם n מקומות
+:::
+
+```{r}
+vector_empty<- vector("numeric",n)
+```
+
+::: {dir="rtl"}
+הצגת ערך במיקום n
+:::
+
+```{r}
+vector_numeric[n]
+```
+
+::: {dir="rtl"}
+יצירת וקטור חדש המאחד ערכים של שני וקטורים שונים במיקום n
+:::
+
+```{r}
+mixed_object1<- c(vector_numeric[n], equal_17[n])
+```
+
+::: {dir="rtl"}
+הוספת מלל לכל ערכי הוקטור
+:::
+
+```{r}
+paste0("text",vector)
+```
+
+::: {dir="rtl"}
+הסרת ערך במיקום n
+:::
+
+```{r}
+vector[-n]
+```
+
+::: {dir="rtl"}
+סידור ערכים בוקטור
+:::
+
+```{r}
+#סדר עולה
+sort(vector)
+
+#סדר יורד
+vector_numeric_desc <- sort(vector, decreasing = TRUE)
+```
+
+::: {dir="rtl"}
+שינוי משתנה לוקטור פקטוריאלי עם חשיבות לסדר הערכים
+:::
+
+```{r}
+age_group_f = factor(age_group, levels = c("Young","Middle","Old")) 
+```
+:::::::::::::
+
+:::: {dir="rtl"}
+**סוגי משתנים**
+
+```{r}
+class(df$vector_a)
+class(df$vector_b)
+#or
+class(c(df$vector_a,df$vector_b))
+class(df)
+```
+
+::: {dir="rtl"}
+שינוי סוג הוקטור למספרי
+:::
+
+```{r}
+vector_new=as.numeric(vector))
+```
+::::
+
+::::::::::: {dir="rtl"}
+**יצירה של d.f ופעולות פשוטות על וקטורים בתוכם**
+
+```{r}
+df<- data.frame(vector_a,vector_b,vector_c)
+```
+
+::: {dir="rtl"}
+חילוץ ערך במיקום n מוקטור בdf
+:::
+
+```{r}
+df$vector[n]
+```
+
+::: {dir="rtl"}
+חילוץ הפרטים בוקטור a שעבורם הערכים של וקטור b גדולים מn
+:::
+
+```{r}
+df$vector_a[df$vector_b>n]
+```
+
+::: {dir="rtl"}
+בדיקת מספר ערכים
+:::
+
+```{r}
+length(df$vector_a[df$vector_b>n])
+```
+
+::: {dir="rtl"}
+סידור שמות המסתנים והוספת קו תחתון במקום רווח
+:::
+
+```{r}
+clean_names()
+```
+
+::: {dir="rtl"}
+שינוי שם של משתנה
+:::
+
+```{r}
+ rename(vector=vector_a)
+```
+
+::: {dir="rtl"}
+הצגת df
+:::
+
+```{r}
+glimpse(df)
+head(df)
+```
+
+::: {dir="rtl"}
+הצגת שמות המתשתנים
+:::
+
+```{r}
+colnames(df)
+```
+
+::: {dir="rtl"}
+בדיקה האם שני df זהים
+:::
+
+```{r}
+all.equal(babies_weight_length_long, babies_weight_length_long2)
+```
+:::::::::::
+
+::::: {dir="rtl"}
+**פונקציות בdf**
+
+העתקה ויצירה של df חדש וביצוע פעולות
+
+```{r}
+df2 <- df %>%
+```
+
+::: {dir="rtl"}
+יצירת משתנה חדש בdf
+:::
+
+```{r}
+mutate(new_variable=variable_x) %>%
+```
+
+::: {dir="rtl"}
+חישוב BMI
+:::
+
+```{r}
+mutate(bmi=weight/ height_m^2)
+```
+:::::
+
+:::::::::::::::: {dir="rtl"}
+**פונקציות נוספות**
+
+חלפת NA ב0
+
+```{r}
+vector_a[is.na(x)] <- 0 
+```
+
+::: {dir="rtl"}
+אם גדול מ30, הצג true, אחרת false
+:::
+
+```{r}
+if_else(bmi>=30,TRUE,FALSE)
+```
+
+::: {dir="rtl"}
+שינוי ערכים במקרה שתנאי מתקיים
+:::
+
+```{r}
+case_when(x<x ~ "option1",x>=n & x<n+5 ~ "option2") 
+```
+
+::: {dir="rtl"}
+סכימה של true
+:::
+
+```{r}
+sum(vector_a)
+```
+
+::: {dir="rtl"}
+יצירת טבלת שכיחויות
+:::
+
+```{r}
+table(vector_a)
+```
+
+::: {dir="rtl"}
+מחיקת אובייקטים מלבד האובייקטים הנבחרים
+:::
+
+```{r}
+rm(list=setdiff(ls(), "object"))
+```
+
+::: {dir="rtl"}
+סינון ערכים
+:::
+
+```{r}
+filter(vector_a == 'x')
+```
+
+::: {dir="rtl"}
+בחירת עמודות לפי השם שלהן
+:::
+
+```{r}
+select(vector_a,vector_b)
+```
+
+::: {dir="rtl"}
+חיבור שני df
+:::
+
+```{r}
+df_both <- left_join(df_age, by=id)
+```
+
+::: {dir="rtl"}
+סידור ערכים לפי משתנה אחד או יותר
+:::
+
+```{r}
+arrange(x)
+```
+
+::: {dir="rtl"}
+בחירת משתנה
+:::
+
+```{r}
+select(vector_a)
+```
+
+::: {dir="rtl"}
+בחירת משתנים להסרה מהdf
+:::
+
+```{r}
+select(-vector_a)
+```
+
+::: {dir="rtl"}
+קיבוץ נתונים לפי קטגוריה מסוימת
+:::
+
+```{r}
+group_by(vector)
+#לביטול הקיבוץ:
+ungroup()
+```
+
+::: {dir="rtl"}
+בדיקה אילו ערכים מופיעים במשתנה (לא נותנת את מספר הפעמים שכל ערך מופיע)
+:::
+
+```{r}
+unique(df$vector)
+```
+::::::::::::::::
+
+::: {dir="rtl"}
+**אפשרויות לבחירת המשתנים**
+
+```{r}
+starts_with("text")
+all_of("text")
+ends_with("text")
+```
+:::
+
+:::::::::::::::: {dir="rtl"}
+**נתונים סטטיסטיים**
+
+ממוצע
+
+```{r}
+mean(vector,na.rm = TRUE/FALSE),
+#כדי להתעלם מערכי NA
+#na.rm = TRUE
+```
+
+::: {dir="rtl"}
+חציון
+:::
+
+```{r}
+median(vector)
+```
+
+::: {dir="rtl"}
+יצירת סיכום סטטיסטי של נתונים בקבוצות או על פי קריטריונים שונים. היא מאפשרת לחשב ערכים מצטברים עבור כל קבוצה או עבור כל הנתונים מחזירה שורה אחת
+:::
+
+```{r}
+summarise(df$vector)
+
+df %>%
+  summarise(new_column = some_function(existing_column))
+```
+
+::: {dir="rtl"}
+יצירת סיכום סטטיסטי של נתונים בקבוצות או על פי קריטריונים שונים. היא מאפשרת לחשב ערכים מצטברים עבור כל קבוצה או עבור כל הנתונים מחזירה מספר שורות
+:::
+
+```{r}
+df %>%
+  reframe(new_column = some_function(existing_column))
+```
+
+::: {dir="rtl"}
+הצגת נתונים בטבלה
+:::
+
+```{r}
+table1(~ vector_rows | vector_columns, data = df)
+```
+
+::: {dir="rtl"}
+סטיית תקן
+:::
+
+```{r}
+sd_eng=sd(food_energy,na.rm = T)
+```
+
+::: {dir="rtl"}
+חישוב אחוזונים
+:::
+
+```{r}
+#רבעונים
+quantile(df$vector) 
+#אחוזונים ספציפיים
+quantile(df$vector, probs = c(0.2,0.33))
+#במידה ויצרנו וקטור עם האחוזונים ניתן להזין את שם הוקטור
+```
+
+::: {dir="rtl"}
+ביצוע פעולות לאורך מספר משתנים יחד
+:::
+
+```{r}
+across(.cols = all_of(vector),
+       .fns = ~the_function(., na.rm = TRUE),
+       .names = "name of new columns")
+
+#הנקודה בסוגריים של הפונקציה גורמת לכך שהפונקצייה תתייחס לכל עמודה בנפרד
+#But, if we want to keep the original variabels, we can use the *.names* argument
+#Within the *.names* argument we can use {.col} and {.fn} to describe the column original name and the function used.
+
+```
+
+::: {dir="rtl"}
+הצגת הפרופורציות של המשתנה
+:::
+
+```{r}
+prop.table(table(df$vector)) * 100
+```
+
+::: {dir="rtl"}
+**t.test**
+:::
+
+```{r}
+t.test(df$variable_a ~ df$variable_b)
+t.test((variable_a~variable_b, data=df))
+#הפונקציה הראשונה היא הרציפה, השנייה צריכה להיות בעלת שתי רמות. הסדר חשוב
+
+#ביצוע המבחן לערך ספציפי
+ttdeath_ttest_t4_a <- t.test(trial_df$ttdeath[trial_df$stage=="T4"] ~ trial_df$trt[trial_df$stage=="T4"])
+#דרך נוספת
+#t test with tidyverse approach 
+ttdeath_ttest_t4_b<- trial_df %>%
+  filter(stage=="T4") %>%
+  t_test(ttdeath ~ trt)
+
+#לפי חלוקת המשתנה לקבוצות
+ttdeath_ttest_per_stage<- trial_df %>%
+  group_by(stage) %>%
+  t_test(ttdeath ~ trt)
+```
+
+::: {dir="rtl"}
+למציאת הp-value מתוך ה-t.test
+:::
+
+```{r}
+name_of_ttest$p.value
+```
+
+::: {dir="rtl"}
+שמירת תוצאות המבחן כdf
+:::
+
+```{r}
+name_of_ttest_df<- tidy(name_of_ttest)
+#**ניתן להפעיל כמעט על כל מבחן**
+```
+
+::: {dir="rtl"}
+**CHI TEST**
+:::
+
+```{r}
+name_of_chi_test<- chisq.test(df$variable_a , df$variable_b)
+
+#מתוך טבלת שכיחויות
+name_of_chi_test<- chisq.test(frequency_table)
+```
+
+::: {dir="rtl"}
+למציאת הp-value מתוך ה-chi.test
+:::
+
+```{r}
+name_of_chi_test$p.value
+```
+::::::::::::::::
+
+::: {dir="rtl"}
+**גרפים R base**
+
+```{r}
+#Basic include
+#plot(x,y):
+ plot(df$vectir_x, df$vector_y) 
+
+#hist(x)
+hist(vector_x$vector_y)
+
+#pie(x)
+
+#barplot(y, names.arg = x)
+barplot(df$vector_y)
+```
+:::
+
+::::::: {dir="rtl"}
+**גרפים בggplot**
+
+הוספת p value
+
+```{r}
+add_p()
+```
+
+::: {dir="rtl"}
+היסטוגרמה
+:::
+
+```{r}
+weight_3_hist<- baby_weight_height %>%
+  ggplot(aes(x=weight_3,fill=gender))+ 
+  geom_histogram(bins=50,alpha=0.7) +
+  weight_3_hist +
+  theme_light()+ 
+  labs(title= "Three Months Weight Distribution", x="weight", y="Count")
+
+#דוגמה נוספת
+nut_hist_p <- val_study_long %>%
+  ggplot(aes(x = value,fill = age_group_f)) +
+  geom_histogram() +
+  labs(title = "Nutrients by age group"
+  )+
+  theme(
+    axis.title = element_blank(),
+    legend.title = element_blank()
+  )+
+  facet_wrap(~nutrient, scales = "free") 
+
+```
+
+::: {dir="rtl"}
+גרף עמודות
+:::
+
+```{r}
+weight_summary %>% 
+  ggplot(aes(x=month, y=mean_weight, fill=gender))+
+  geom_bar(stat="identity", position = "dodge")+  # Change the position of the bars
+  labs(title = "Mean weight per month", x="Month", y="Mean weight")+ 
+  theme_minimal()+
+  scale_x_continuous(breaks = seq(0, 12, by = 3)) # Change the x axis scale
+## Lets make it stacked
+df %>%
+  dplyr::count(gender, depression) %>% ggplot(aes(x = depression, y = n, fill = gender)) +
+  geom_bar(stat = "identity", position = "stack") + scale_fill_manual(values = c("Male" = "#1f77b4", "Female" = "#ff7f0e")) +
+  labs(title = "Depression Status by Gender",
+       x = "Depression",
+       y = "Count",
+       fill = "Gender") + 
+  theme_minimal()
+
+```
+
+::: {dir="rtl"}
+גרף פיזור (נקודות)
+:::
+
+```{r}
+#Scatter plot from STHDA
+ggplot(baby_weight_height, aes(x=weight_12, y=length_12)) +
+  geom_point(size=2, shape=23)
+#default scatter plot
+one_year_scatterplot<- ggplot(baby_weight_height, aes(x=weight_12, y=length_12, color=gender)) +
+  geom_point(size=1)+
+  theme_classic()+
+  labs(title="Weight to length separated by gender" )
+#split based on week_stage
+one_year_scatterplot+
+  facet_wrap(.~week_stage)+
+  labs(title = "Weight to length separated by gender and preterm categories")
+# scatter plot with some extra styling
+val_study_join_plot_ready %>% 
+  ggplot(aes(food_energy,protein, color=tool))+
+  geom_point()+
+  theme_classic()+ #add theme
+  labs(title="Protein vs energy",
+       color= "Assessment tool")+ #add title
+  geom_smooth() #add trend line
+
+#דוגמה נוספת
+#scatter plot with correlation value
+protein_vs_energy_p1<- val_study_join_plot_ready %>% 
+  ggplot(aes(food_energy,protein, color=tool))+
+  geom_point()+
+  theme_classic()+
+  labs(title="Protein vs energy",
+       color= "Assesment tool")+
+  geom_smooth()+
+  stat_cor(show.legend = FALSE) # כדי להוסיף R^2 ולסדר את המקרא
+#some extras styling and facet_wrap
+protein_vs_energy_p2<- protein_vs_energy_p1 +
+  scale_color_manual(values = c("#395685","#9e5473"))+ #change colors manually
+  theme(
+    legend.title = element_blank(), #remove legend title
+    legend.position="top", # change  the legend  position
+    plot.title = element_text(color="#b06933") #change title color
+  )+
+  facet_wrap(. ~age_group_f,nrow = 3) #split based on age group
+```
+
+::: {dir="rtl"}
+גרף boxplot
+:::
+
+```{r}
+# simple boxplot
+val_study_join_plot_ready %>% 
+  ggplot(aes(x=total_dietary_fiber)) +
+  geom_boxplot()
+# boxplot y axis (more common)
+fiber_boxplot_p <- val_study_join_plot_ready %>%
+  ggplot(aes(y=total_dietary_fiber, x=age_group_f, fill=age_group_f )) +
+  geom_boxplot()+
+  scale_fill_brewer(palette = "Set2")
+# add some extras
+fiber_boxplot_p <- fiber_boxplot_p +
+  stat_compare_means(method = "anova", label = "p.format",  label.y = 90)+ # Add p-values
+  geom_jitter(aes(color = age_group_f), # add points for each participant)
+              position = position_jitter(width = 0.1), 
+              size = 2, alpha = 0.6, show.legend = FALSE)+
+  labs(title = "Total dietary fiber by age group", # add title
+       y = "Total dietary fiber (g)")+
+  theme(  # remove axis titles and legend title
+    axis.title.x = element_blank(),
+    axis.text.x  = element_blank(),
+    legend.title = element_blank())
+
+#דוגמה נוספת
+nut_boxplot_p <- val_study_long %>%
+  ggplot(aes(x = age_group_f, y = value,fill = age_group_f)) + # change the y axis to x axis
+  geom_boxplot() +
+  stat_compare_means(method = "anova", label = "p.format", size=3 )+ 
+  geom_jitter(aes(color = age_group_f), 
+              position = position_jitter(width = 0.1), 
+              size = 2, alpha = 0.6, show.legend = FALSE)+
+  labs(title = "Nutrients by age group" # change the title from fiber to nutrients
+  )+
+  theme(
+    axis.title = element_blank(),
+    legend.title = element_blank()
+  )+
+  facet_wrap(~nutrient, scales = "free") # split the graph based on nutrient add scales = "free"
+
+```
+:::::::
+
+:::: {dir="rtl"}
+**pivot**
+
+pivot longer מציג את הdf לאורך כל ערך במשתנה שהופיע בשורות יופיע מספר פעמים לפי העמודות שהיו בdf הרחב
+
+```{r}
+#
+df_long <- df_wide %>% pivot_longer(cols=c("Score_2021","Score_2022"),
+names_to = 'year', values_to = 'score', #שינוי השמות של העמודות הישנות ואז הערכים
+names_prefix = 'Score_') #הסרת חלק מהטקסט שהופיע בעמודות הישנות
+# Complex pivoting
+babies_weight_length_long2 <- baby_weight_length %>% 
+  pivot_longer(cols = starts_with(c("weight", "length")),
+               names_to = c(".value", "month"),
+               names_sep = "_")
+```
+
+::: {dir="rtl"}
+pivot wider
+:::
+
+```{r}
+dfw <- df_long %>% pivot_wider(names_from = year,
+values_from = score)
+```
+::::
+
+::: {dir="rtl"}
+**בניית פונקציה חדשה**
+
+```{r}
+name_of_new_function<- function(parameter_a, prameter_b_if_needed){
+  name_of_result <- the_actual_function(the_parameters)
+  return(name_of_result)
+}
+```
+:::
+
+::: {dir="rtl"}
+**חבילת gtsummary**
+
+```{r}
+
+#Basic summary table with gtsummary
+trial_df2 %>% 
+  tbl_summary()
+
+#add spliting by treatment
+trial_df2 %>% 
+  tbl_summary(by=trt) #split by trt
+
+
+summary_table <- trial_df2 %>%  #save as an object
+  tbl_summary(
+    by=trt, 
+    missing = "no", # hide missing data
+    statistic = list( #argument for the statistic showed on the table
+      all_continuous() ~ "{mean} ({sd})",  #for numeric variables: mean (sd)
+      all_categorical() ~ "{n}({p}%)" #for categorical variables: n (%) 
+    )) 
+
+summary_table
+
+#some more customization
+summary_table<-summary_table %>% 
+  modify_caption("Summary of the trial data") %>% #change the title
+  add_p(
+    test = all_continuous() ~ "t.test",  #change the test (default is nonparametric)
+  ) 
+summary_table
+
+summary_table <- summary_table %>% 
+  as_gt() #this change nothing in what we see but it will be useful for saving the table
+
+#export the table as html looks better but it is not editable
+gt::gtsave(summary_table,"output/summary_table.html")
+
+#export the table as docx - this is editable but remove some of the formatting (but keeps getting better)
+gt::gtsave(summary_table,"output/summary_table.docx")
+```
+:::
